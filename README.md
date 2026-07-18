@@ -45,7 +45,7 @@ Versões pré-lançamento do Zabbix geram aviso e devem ser validadas em homolog
 ## Instalação rápida
 
 ```bash
-git clone https://github.com/OWNER/youtube-live-monitor.git
+git clone https://github.com/arraisfilho/youtube-live-monitor.git
 cd youtube-live-monitor
 sudo ./install.sh
 ```
