@@ -21,7 +21,7 @@ from urllib.parse import parse_qs, urlparse
 import requests
 import yaml
 
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 DEFAULT_CONFIG = "/etc/youtube-live-monitor/config.yaml"
 DEFAULT_DB = "/var/lib/youtube-live-monitor/state.db"
 

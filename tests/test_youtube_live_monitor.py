@@ -378,6 +378,10 @@ def test_dashboard_is_portable_and_repeats_each_live() -> None:
     assert first_row["repeat"] == {"mode": "variable", "value": "live"}
     datasource = dashboard["spec"]["variables"][0]["spec"]["current"]
     assert datasource == {"text": "", "value": ""}
+    peak_query = dashboard["spec"]["elements"]["panel-14"]["spec"]["data"]["spec"]["queries"][0]
+    peak_functions = peak_query["spec"]["query"]["spec"]["functions"]
+    assert peak_functions[0]["text"] == "scale(1000)"
+    assert peak_functions[0]["params"] == ["1000"]
     serialized = json.dumps(dashboard)
     assert "createdBy" not in serialized
     assert "updatedBy" not in serialized

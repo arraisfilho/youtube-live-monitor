@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1 - 2026-07-18
+
+### Fixed
+
+- Corrigida a conversão do painel **Momento do pico**: o timestamp Unix do Zabbix é multiplicado por 1000 antes de ser formatado como data pelo Grafana.
+
 ## 1.3.0 - 2026-07-18
 
 ### Added

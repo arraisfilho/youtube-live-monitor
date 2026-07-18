@@ -1830,7 +1830,33 @@
                         },
                         "countTriggersBy": "",
                         "evaltype": "0",
-                        "functions": [],
+                        "functions": [
+                          {
+                            "def": {
+                              "category": "Transform",
+                              "defaultParams": [
+                                100
+                              ],
+                              "name": "scale",
+                              "params": [
+                                {
+                                  "name": "factor",
+                                  "options": [
+                                    100,
+                                    0.01,
+                                    10,
+                                    -1
+                                  ],
+                                  "type": "float"
+                                }
+                              ]
+                            },
+                            "params": [
+                              "1000"
+                            ],
+                            "text": "scale(1000)"
+                          }
+                        ],
                         "group": {
                           "filter": "YouTube Live Monitor"
                         },
