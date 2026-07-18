@@ -1,0 +1,10 @@
+lives:
+  # Substitua pelo ID real e altere para true quando quiser iniciar a coleta.
+  - url: XXXXXXXXXXX
+    enabled: false
+
+  # URLs também são aceitas.
+  # - url: https://www.youtube.com/watch?v=YYYYYYYYYYY
+  #   enabled: true
+  # - url: https://youtu.be/ZZZZZZZZZZZ
+  #   enabled: false

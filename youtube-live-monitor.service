@@ -1,0 +1,36 @@
+[Unit]
+Description=YouTube Live Monitor for Zabbix
+Documentation=file:///usr/share/doc/youtube-live-monitor/README.md
+After=network-online.target zabbix-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=youtube-monitor
+Group=youtube-monitor
+EnvironmentFile=-/etc/youtube-live-monitor/environment
+ExecStart=/opt/youtube-live-monitor/venv/bin/python /opt/youtube-live-monitor/youtube_live_monitor.py --config /etc/youtube-live-monitor/config.yaml --database /var/lib/youtube-live-monitor/state.db
+Restart=on-failure
+RestartSec=10
+WorkingDirectory=/var/lib/youtube-live-monitor
+StateDirectory=youtube-live-monitor
+StateDirectoryMode=0750
+LogsDirectory=youtube-live-monitor
+LogsDirectoryMode=0750
+ConfigurationDirectory=youtube-live-monitor
+ConfigurationDirectoryMode=0750
+StandardOutput=append:/var/log/youtube-live-monitor/monitor.log
+StandardError=append:/var/log/youtube-live-monitor/monitor.log
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/youtube-live-monitor /var/log/youtube-live-monitor
+CapabilityBoundingSet=
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

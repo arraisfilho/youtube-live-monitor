@@ -1,0 +1,32 @@
+youtube:
+  api_key: SUA_API_KEY
+
+collector:
+  interval: 15
+  timeout: 10
+  retries: 2
+  batch_size: 50
+  unknown_interval: 300
+  error_backoff_initial: 300
+  error_backoff_max: 3600
+  schedule_poll:
+    more_than_24h: 21600
+    more_than_6h: 3600
+    more_than_1h: 900
+    more_than_15m: 300
+    near_start: 60
+    overdue: 30
+
+zabbix:
+  server: 127.0.0.1
+  port: 10051
+  api_url: https://zabbix.exemplo.com/zabbix/api_jsonrpc.php
+  api_token: SEU_TOKEN_DA_API_ZABBIX
+  sender_path: /usr/bin/zabbix_sender
+  verify_tls: true
+  tls_connect: unencrypted
+
+lives_file: /etc/youtube-live-monitor/lives.yaml
+
+# Compatibilidade: uma lista `lives:` ainda pode ser declarada aqui, mas o
+# arquivo externo acima é recomendado.
