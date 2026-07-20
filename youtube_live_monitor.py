@@ -21,7 +21,7 @@ from urllib.parse import parse_qs, urlparse
 import requests
 import yaml
 
-VERSION = "1.3.1"
+VERSION = "1.3.2"
 DEFAULT_CONFIG = "/etc/youtube-live-monitor/config.yaml"
 DEFAULT_DB = "/var/lib/youtube-live-monitor/state.db"
 
@@ -215,6 +215,7 @@ def load_config(path: str) -> dict[str, Any]:
     collector.setdefault("unknown_interval", 300)
     collector.setdefault("error_backoff_initial", 300)
     collector.setdefault("error_backoff_max", 3600)
+    collector.setdefault("log_api_state", False)
     policy = collector.setdefault("schedule_poll", {})
     if not isinstance(policy, dict):
         raise ValueError("collector.schedule_poll deve ser um mapa")
@@ -238,6 +239,8 @@ def load_config(path: str) -> dict[str, Any]:
     )
     if collector["error_backoff_max"] < collector["error_backoff_initial"]:
         raise ValueError("collector.error_backoff_max deve ser >= error_backoff_initial")
+    if not isinstance(collector["log_api_state"], bool):
+        raise ValueError("collector.log_api_state deve ser true ou false sem aspas")
     for key in DEFAULT_POLL_POLICY:
         policy[key] = _positive_number(policy[key], f"collector.schedule_poll.{key}", minimum=15)
 
@@ -345,6 +348,15 @@ class State:
             "SELECT next_poll, finalized FROM poll_schedule WHERE video_id=?", (video_id,)
         ).fetchone()
         return bool(row and not row["finalized"] and row["next_poll"] > now)
+
+    def last_status(self, video_id: str) -> int | None:
+        row = self.db.execute(
+            "SELECT last_status FROM poll_schedule WHERE video_id=?", (video_id,)
+        ).fetchone()
+        if row is not None:
+            return int(row["last_status"])
+        row = self.db.execute("SELECT status FROM lives WHERE video_id=?", (video_id,)).fetchone()
+        return int(row["status"]) if row is not None else None
 
     def mark_attempt(self, video_id: str, now: float) -> None:
         self.db.execute(
@@ -632,12 +644,18 @@ def normalize(video_id: str, item: dict[str, Any], latency: float, api_status: i
     snippet = item.get("snippet", {})
     statistics = item.get("statistics", {})
     details = item.get("liveStreamingDetails", {})
-    broadcast = snippet.get("liveBroadcastContent", "none")
+    broadcast = snippet.get("liveBroadcastContent")
     if details.get("actualEndTime"):
         state = "ended"
-    elif broadcast == "live" or (details.get("actualStartTime") and not details.get("actualEndTime")):
+    elif broadcast == "live":
         state = "live"
-    elif broadcast == "upcoming" or details.get("scheduledStartTime"):
+    elif broadcast == "upcoming":
+        state = "scheduled"
+    elif broadcast == "none" and details.get("actualStartTime"):
+        state = "ended"
+    elif details.get("actualStartTime"):
+        state = "live"
+    elif details.get("scheduledStartTime"):
         state = "scheduled"
     else:
         state = "unknown"
@@ -667,6 +685,30 @@ def normalize(video_id: str, item: dict[str, Any], latency: float, api_status: i
         "last_update": int(time.time()),
         "api_latency": round(latency, 3),
         "api_status": api_status,
+    }
+
+
+def api_state_snapshot(
+    video_id: str,
+    item: dict[str, Any],
+    info: dict[str, Any],
+    previous_status: int | None = None,
+) -> dict[str, Any]:
+    snippet = item.get("snippet", {})
+    details = item.get("liveStreamingDetails", {})
+    status_names = {value: key for key, value in STATUS.items()}
+    current_status = int(info["status"])
+    return {
+        "video_id": video_id,
+        "status_anterior": previous_status,
+        "status_normalizado": current_status,
+        "status_nome": status_names.get(current_status, "unknown"),
+        "liveBroadcastContent": snippet.get("liveBroadcastContent"),
+        "scheduledStartTime": details.get("scheduledStartTime"),
+        "actualStartTime": details.get("actualStartTime"),
+        "actualEndTime": details.get("actualEndTime"),
+        "concurrentViewers": details.get("concurrentViewers"),
+        "activeLiveChatId": details.get("activeLiveChatId"),
     }
 
 
@@ -809,7 +851,9 @@ class Provisioner:
 
     def _ensure_live_items(self, host_id: str, info: dict[str, Any]) -> None:
         video_id = str(info["video_id"])
-        existing = self.api.call("item.get", {"hostids": host_id, "output": ["itemid", "key_", "name"]})
+        existing = self.api.call(
+            "item.get", {"hostids": host_id, "output": ["itemid", "key_", "name", "trends"]}
+        )
         by_key = {entry["key_"]: entry for entry in existing}
         source = parse_iso(info.get("scheduled_start")) or parse_iso(info.get("actual_start"))
         date = datetime.fromtimestamp(source, timezone.utc).strftime("%d/%m/%Y") if source else datetime.now(timezone.utc).strftime("%d/%m/%Y")
@@ -818,8 +862,13 @@ class Provisioner:
             key = f"youtube.live[{video_id},{metric}]"
             name = f"{live_name}: {label}"
             if key in by_key:
+                update = {"itemid": by_key[key]["itemid"]}
                 if by_key[key].get("name") != name:
-                    self.api.call("item.update", {"itemid": by_key[key]["itemid"], "name": name})
+                    update["name"] = name
+                if metric == "status" and str(by_key[key].get("trends")) != "0":
+                    update["trends"] = "0"
+                if len(update) > 1:
+                    self.api.call("item.update", update)
                 continue
             payload: dict[str, Any] = {
                 "hostid": host_id,
@@ -829,7 +878,7 @@ class Provisioner:
                 "value_type": value_type,
                 "delay": "0",
                 "history": "90d",
-                "trends": "365d" if value_type in {0, 3} else "0",
+                "trends": "0" if metric == "status" or value_type == 4 else "365d",
                 "tags": [
                     {"tag": "channel", "value": str(info.get("channel_name", ""))},
                     {"tag": "video_id", "value": video_id},
@@ -905,6 +954,7 @@ def cycle(
     cfg: dict[str, Any],
     state: State,
     test: bool = False,
+    inspect_api: bool = False,
     client: YouTubeClient | None = None,
     provisioner: Provisioner | None = None,
 ) -> int:
@@ -962,13 +1012,26 @@ def cycle(
                 continue
             info = normalize(video_id, item, latency, api_status)
             if test:
-                print(
-                    f"OK video_id={video_id} título={info['title']!r} canal={info['channel_name']!r} "
-                    f"status={info['status']} api={api_status}"
-                )
+                if inspect_api:
+                    print(json.dumps(api_state_snapshot(video_id, item, info), ensure_ascii=False, indent=2))
+                else:
+                    print(
+                        f"OK video_id={video_id} título={info['title']!r} canal={info['channel_name']!r} "
+                        f"status={info['status']} api={api_status}"
+                    )
                 successful += 1
                 continue
             try:
+                previous_status = state.last_status(video_id)
+                if bool(collector_cfg.get("log_api_state", False)) or previous_status != int(info["status"]):
+                    logging.info(
+                        "Estado YouTube: %s",
+                        json.dumps(
+                            api_state_snapshot(video_id, item, info, previous_status),
+                            ensure_ascii=False,
+                            separators=(",", ":"),
+                        ),
+                    )
                 info.update(state.update(video_id, info, now))
                 state.mark_success(video_id, info, collector_cfg, now)
                 assert provisioner is not None
@@ -1017,6 +1080,11 @@ def main() -> int:
     parser.add_argument("--config", default=DEFAULT_CONFIG)
     parser.add_argument("--database", default=DEFAULT_DB)
     parser.add_argument("--test", action="store_true", help="Valida a configuração e consulta todas as lives uma vez")
+    parser.add_argument(
+        "--inspect-api",
+        action="store_true",
+        help="Mostra os campos públicos de estado retornados pelo YouTube, sem acessar o Zabbix",
+    )
     parser.add_argument("--once", action="store_true", help="Executa um único ciclo completo")
     parser.add_argument("--check-config", action="store_true", help="Valida os arquivos sem acessar serviços externos")
     parser.add_argument("--version", action="version", version=VERSION)
@@ -1028,19 +1096,20 @@ def main() -> int:
         if args.check_config:
             print(f"Configuração válida: {enabled_count} live(s) habilitada(s), {len(cfg['lives'])} cadastrada(s)")
             return 0
-        if not args.test and not valid_credentials(cfg):
+        api_only = args.test or args.inspect_api
+        if not api_only and not valid_credentials(cfg):
             raise MonitorError("Credenciais reais de YouTube e Zabbix são obrigatórias")
-        if not args.test and not cfg.get("zabbix", {}).get("api_url"):
+        if not api_only and not cfg.get("zabbix", {}).get("api_url"):
             raise MonitorError("zabbix.api_url é obrigatória")
-        if args.test and not cfg.get("youtube", {}).get("api_key"):
+        if api_only and not cfg.get("youtube", {}).get("api_key"):
             raise ValueError("youtube.api_key é obrigatória")
         state = State(args.database)
         try:
             client = YouTubeClient(
                 str(cfg["youtube"]["api_key"]), float(cfg["collector"]["timeout"]), int(cfg["collector"]["retries"])
             )
-            if args.test:
-                return 1 if cycle(cfg, state, test=True, client=client) else 0
+            if api_only:
+                return 1 if cycle(cfg, state, test=True, inspect_api=args.inspect_api, client=client) else 0
             zabbix = cfg["zabbix"]
             provisioner = Provisioner(
                 ZabbixAPI(zabbix["api_url"], zabbix["api_token"], bool(zabbix.get("verify_tls", True)))

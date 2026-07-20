@@ -9,6 +9,7 @@ collector:
   unknown_interval: 300
   error_backoff_initial: 300
   error_backoff_max: 3600
+  log_api_state: false
   schedule_poll:
     more_than_24h: 21600
     more_than_6h: 3600

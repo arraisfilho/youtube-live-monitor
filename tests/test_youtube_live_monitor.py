@@ -62,6 +62,7 @@ def test_load_config_reads_external_lives_and_adaptive_defaults(tmp_path: Path) 
     assert config["lives"] == [{"enabled": True, "url": "AbCdEfGhI12"}]
     assert config["collector"]["interval"] == 15
     assert config["collector"]["batch_size"] == 50
+    assert config["collector"]["log_api_state"] is False
     assert config["collector"]["schedule_poll"]["more_than_24h"] == 21600
 
 
@@ -112,9 +113,16 @@ def test_normalize_exposes_public_metrics_and_statuses() -> None:
         0.1,
         200,
     )
+    ended_without_timestamp = normalize(
+        "AbCdEfGhI12",
+        youtube_item(broadcast="none", started="2026-07-15T15:00:00Z"),
+        0.1,
+        200,
+    )
     assert upcoming["status"] == 1
     assert live["status"] == 2
     assert ended["status"] == 3
+    assert ended_without_timestamp["status"] == 3
     assert live["total_views"] == 1000
     assert live["like_count"] == 75
     assert live["comment_count"] == 12
@@ -222,6 +230,14 @@ def test_live_interval_and_ended_finalization(tmp_path: Path) -> None:
     assert state.is_due("AbCdEfGhI12", now + 15)
     state.mark_success("AbCdEfGhI12", {"status": 3}, collector_config(), now + 15)
     assert not state.is_due("AbCdEfGhI12", now + 10_000_000)
+    state.close()
+
+
+def test_state_exposes_last_persisted_status(tmp_path: Path) -> None:
+    state = State(str(tmp_path / "state.db"))
+    assert state.last_status("AbCdEfGhI12") is None
+    state.mark_success("AbCdEfGhI12", {"status": 2}, collector_config(), 1000.0)
+    assert state.last_status("AbCdEfGhI12") == 2
     state.close()
 
 
@@ -382,6 +398,8 @@ def test_dashboard_is_portable_and_repeats_each_live() -> None:
     peak_functions = peak_query["spec"]["query"]["spec"]["functions"]
     assert peak_functions[0]["text"] == "scale(1000)"
     assert peak_functions[0]["params"] == ["1000"]
+    status_query = dashboard["spec"]["elements"]["panel-4"]["spec"]["data"]["spec"]["queries"][0]
+    assert status_query["spec"]["query"]["spec"]["options"]["useTrends"] == "false"
     serialized = json.dumps(dashboard)
     assert "createdBy" not in serialized
     assert "updatedBy" not in serialized

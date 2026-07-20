@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.2 - 2026-07-20
+
+### Added
+
+- Comando `--inspect-api` para exibir os campos públicos usados na classificação, sem acessar o Zabbix.
+- Registro estruturado dos campos de estado quando uma transmissão muda de situação; diagnóstico contínuo opcional com `collector.log_api_state`.
+
+### Fixed
+
+- Uma transmissão iniciada com `liveBroadcastContent: none` agora é classificada como encerrada mesmo se `actualEndTime` ainda estiver ausente.
+- O painel **Status** consulta o histórico bruto, sem médias de trends que poderiam produzir valores inválidos como `2.13`.
+- Itens Zabbix de status novos ou reconciliados ficam sem trends, pois o estado é uma métrica discreta.
+
 ## 1.3.1 - 2026-07-18
 
 ### Fixed

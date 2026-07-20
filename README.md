@@ -45,7 +45,7 @@ Versões pré-lançamento do Zabbix geram aviso e devem ser validadas em homolog
 ## Instalação rápida
 
 ```bash
-git clone https://github.com/arraisfilho/youtube-live-monitor.git
+git clone https://github.com/SEU_USUARIO/youtube-live-monitor.git
 cd youtube-live-monitor
 sudo ./install.sh
 ```
@@ -75,6 +75,7 @@ collector:
   unknown_interval: 300
   error_backoff_initial: 300
   error_backoff_max: 3600
+  log_api_state: false
   schedule_poll:
     more_than_24h: 21600
     more_than_6h: 3600
@@ -112,6 +113,26 @@ lives:
 ```
 
 `enabled` deve ser o booleano `true` ou `false`, sem aspas. Uma entrada desabilitada não chama a API do YouTube. Para aplicar alterações, reinicie o serviço.
+
+## Diagnóstico do estado da transmissão
+
+O coletor classifica a transmissão pelos campos públicos `snippet.liveBroadcastContent`,
+`liveStreamingDetails.actualStartTime` e `actualEndTime`. Os estados enviados ao Zabbix são inteiros:
+`0` desconhecido, `1` agendada, `2` ao vivo e `3` encerrada.
+
+Para consultar uma vez todas as lives habilitadas e ver apenas os campos públicos usados nessa decisão:
+
+```bash
+sudo -u youtube-monitor \
+  /opt/youtube-live-monitor/venv/bin/python \
+  /opt/youtube-live-monitor/youtube_live_monitor.py \
+  --config /etc/youtube-live-monitor/config.yaml \
+  --database /var/lib/youtube-live-monitor/state.db \
+  --inspect-api
+```
+
+O log registra automaticamente a resposta resumida quando o estado muda, sem gravar a chave da API.
+Para registrar também cada consulta realizada, defina `collector.log_api_state: true` temporariamente e reinicie o serviço.
 
 Variáveis de ambiente substituem o YAML:
 

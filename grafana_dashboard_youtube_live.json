@@ -456,7 +456,7 @@
                           "disableDataAlignment": false,
                           "showDisabledItems": false,
                           "skipEmptyValues": false,
-                          "useTrends": "default",
+                          "useTrends": "false",
                           "useZabbixValueMapping": false
                         },
                         "proxy": {
