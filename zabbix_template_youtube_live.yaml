@@ -1,0 +1,27 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 86d3b0b86fb44e3eaab952a47d816560
+      name: YouTube Live Monitor
+  templates:
+    - uuid: 50436f947ed94eb184168c06f95388da
+      template: YouTube Live Monitor
+      name: YouTube Live Monitor
+      description: 'Base template for channels provisioned by youtube-live-monitor. Per-live trapper items are created by the collector through the Zabbix API.'
+      groups:
+        - name: YouTube Live Monitor
+      tags:
+        - tag: component
+          value: youtube-live-monitor
+      valuemaps:
+        - uuid: bd3cf7510587457691ada54df1bb2d1f
+          name: YouTube Live status
+          mappings:
+            - value: '0'
+              newvalue: Desconhecida
+            - value: '1'
+              newvalue: Agendada
+            - value: '2'
+              newvalue: Ao vivo
+            - value: '3'
+              newvalue: Encerrada

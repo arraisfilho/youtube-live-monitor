@@ -1,0 +1,7 @@
+# Copie para /etc/youtube-live-monitor/environment e use modo 0640.
+YOUTUBE_API_KEY=SUA_API_KEY
+ZABBIX_API_URL=https://zabbix.exemplo.com/zabbix/api_jsonrpc.php
+ZABBIX_API_TOKEN=SEU_TOKEN_DA_API_ZABBIX
+ZABBIX_SERVER=127.0.0.1
+ZABBIX_PORT=10051
+YOUTUBE_LIVES_FILE=/etc/youtube-live-monitor/lives.yaml
