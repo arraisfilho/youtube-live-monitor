@@ -8,5 +8,5 @@ providers:
     updateIntervalSeconds: 30
     allowUiUpdates: true
     options:
-      path: /var/lib/grafana/dashboards/youtube-live-monitor
+      path: /var/lib/grafana-dashboards
       foldersFromFilesStructure: false

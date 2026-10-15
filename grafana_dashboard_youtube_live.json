@@ -27,7 +27,7 @@
       }
     ],
     "cursorSync": "Crosshair",
-    "description": "Monitoramento de lives públicas do YouTube via Zabbix, com coleta adaptativa e telemetria do coletor.",
+    "description": "Monitoramento de lives públicas do YouTube com VictoriaMetrics, coleta adaptativa e telemetria do coletor.",
     "editable": true,
     "elements": {
       "panel-1": {
@@ -46,57 +46,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Concurrent viewers"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_concurrent_viewers{video_id=\"$live\"}",
+                        "legendFormat": "Espectadores atuais",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -172,57 +132,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Peak viewers"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_peak_viewers{video_id=\"$live\"}",
+                        "legendFormat": "Pico",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -298,57 +218,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Average viewers"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_average_viewers{video_id=\"$live\"}",
+                        "legendFormat": "Média",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -424,57 +304,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Status"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "false",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_status{video_id=\"$live\"}",
+                        "legendFormat": "Status",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -582,57 +422,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Elapsed time"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_elapsed_seconds{video_id=\"$live\"}",
+                        "legendFormat": "Tempo decorrido",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -708,57 +508,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Total views"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_views{video_id=\"$live\"}",
+                        "legendFormat": "Visualizações",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -834,57 +594,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Concurrent viewers"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_concurrent_viewers{video_id=\"$live\"}",
+                        "legendFormat": "Espectadores",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -994,57 +714,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Viewer change per minute"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_viewer_change_per_minute{video_id=\"$live\"}",
+                        "legendFormat": "Variação de espectadores/min",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -1154,57 +834,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: New views per minute"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_new_views_per_minute{video_id=\"$live\"}",
+                        "legendFormat": "Novas visualizações/min",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -1315,57 +955,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Likes"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_likes{video_id=\"$live\"}",
+                        "legendFormat": "Curtidas",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -1441,57 +1041,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Comments"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_comments{video_id=\"$live\"}",
+                        "legendFormat": "Comentários",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -1567,57 +1127,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Engagement rate"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_engagement_rate_percent{video_id=\"$live\"}",
+                        "legendFormat": "Engajamento",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -1693,57 +1213,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Start delay"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_start_delay_seconds{video_id=\"$live\"}",
+                        "legendFormat": "Atraso do início",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -1819,83 +1299,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [
-                          {
-                            "def": {
-                              "category": "Transform",
-                              "defaultParams": [
-                                100
-                              ],
-                              "name": "scale",
-                              "params": [
-                                {
-                                  "name": "factor",
-                                  "options": [
-                                    100,
-                                    0.01,
-                                    10,
-                                    -1
-                                  ],
-                                  "type": "float"
-                                }
-                              ]
-                            },
-                            "params": [
-                              "1000"
-                            ],
-                            "text": "scale(1000)"
-                          }
-                        ],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Peak timestamp"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_peak_timestamp_seconds{video_id=\"$live\"} * 1000",
+                        "legendFormat": "Momento do pico",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -1971,57 +1385,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: Time to peak"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_time_to_peak_seconds{video_id=\"$live\"}",
+                        "legendFormat": "Tempo até o pico",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -2097,57 +1471,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor"
-                        },
-                        "host": {
-                          "filter": "$channel"
-                        },
-                        "item": {
-                          "filter": "$live: New likes per minute"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_live_likes_per_minute{video_id=\"$live\"}",
+                        "legendFormat": "Novas curtidas/min",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -2258,57 +1592,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "YouTube API calls today"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_collector_api_calls_today",
+                        "legendFormat": "Chamadas API hoje",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -2384,57 +1678,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "Enabled lives"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_collector_lives{status=\"enabled\"}",
+                        "legendFormat": "Lives habilitadas",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -2510,57 +1764,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "Scheduled lives"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_collector_lives{status=\"scheduled\"}",
+                        "legendFormat": "Agendadas",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -2636,57 +1850,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "Live streams"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_collector_lives{status=\"live\"}",
+                        "legendFormat": "Ao vivo",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -2762,57 +1936,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "Scheduled polls skipped"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_collector_scheduled_polls_skipped_total",
+                        "legendFormat": "Coletas adiadas",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -2888,57 +2022,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "Videos per API call"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "increase(youtube_collector_videos_polled_total[1h]) / increase(youtube_collector_api_calls_total[1h])",
+                        "legendFormat": "Vídeos por chamada",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -3014,57 +2108,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "Age of last successful poll"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_collector_last_success_age_seconds",
+                        "legendFormat": "Último sucesso",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -3140,57 +2194,17 @@
                   "spec": {
                     "query": {
                       "kind": "DataQuery",
-                      "group": "alexanderzobnin-zabbix-datasource",
+                      "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${DS_ZABBIX}"
+                        "name": "${DS_PROMETHEUS}"
                       },
                       "spec": {
-                        "application": {
-                          "filter": ""
-                        },
-                        "countTriggersBy": "",
-                        "evaltype": "0",
-                        "functions": [],
-                        "group": {
-                          "filter": "YouTube Live Monitor Internal"
-                        },
-                        "host": {
-                          "filter": "YouTube Live Monitor Collector"
-                        },
-                        "item": {
-                          "filter": "Maximum consecutive errors"
-                        },
-                        "itemTag": {
-                          "filter": ""
-                        },
-                        "macro": {
-                          "filter": ""
-                        },
-                        "options": {
-                          "count": false,
-                          "disableDataAlignment": false,
-                          "showDisabledItems": false,
-                          "skipEmptyValues": false,
-                          "useTrends": "default",
-                          "useZabbixValueMapping": false
-                        },
-                        "proxy": {
-                          "filter": ""
-                        },
-                        "queryType": "0",
-                        "resultFormat": "time_series",
-                        "schema": 12,
-                        "table": {
-                          "skipEmptyValues": false
-                        },
-                        "tags": {
-                          "filter": ""
-                        },
-                        "textFilter": "",
-                        "trigger": {
-                          "filter": ""
-                        }
+                        "expr": "youtube_collector_consecutive_errors",
+                        "legendFormat": "Erros consecutivos",
+                        "range": true,
+                        "instant": false,
+                        "editorMode": "code"
                       }
                     },
                     "refId": "A",
@@ -3258,7 +2272,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "title": "$live",
+              "title": "${live:text}",
               "collapse": false,
               "repeat": {
                 "mode": "variable",
@@ -3607,7 +2621,7 @@
     "preload": false,
     "tags": [
       "youtube",
-      "zabbix",
+      "victoriametrics",
       "live",
       "grafana-13"
     ],
@@ -3637,8 +2651,8 @@
       {
         "kind": "DatasourceVariable",
         "spec": {
-          "name": "DS_ZABBIX",
-          "pluginId": "alexanderzobnin-zabbix-datasource",
+          "name": "DS_PROMETHEUS",
+          "pluginId": "prometheus",
           "refresh": "onDashboardLoad",
           "regex": "",
           "current": {
@@ -3648,7 +2662,7 @@
           "options": [],
           "multi": false,
           "includeAll": false,
-          "label": "Zabbix",
+          "label": "Fonte de dados",
           "hide": "dontHide",
           "skipUrlSync": false,
           "allowCustomValue": true
@@ -3658,6 +2672,7 @@
         "kind": "QueryVariable",
         "spec": {
           "name": "channel",
+          "label": "Canal",
           "current": {
             "text": [
               "All"
@@ -3666,32 +2681,30 @@
               "$__all"
             ]
           },
-          "label": "Canal",
           "hide": "dontHide",
-          "refresh": "onDashboardLoad",
+          "refresh": "onTimeRangeChanged",
           "skipUrlSync": false,
           "query": {
             "kind": "DataQuery",
-            "group": "alexanderzobnin-zabbix-datasource",
+            "group": "prometheus",
             "version": "v0",
             "datasource": {
-              "name": "${DS_ZABBIX}"
+              "name": "${DS_PROMETHEUS}"
             },
             "spec": {
-              "application": "",
-              "group": "YouTube Live Monitor",
-              "host": "/.*/",
-              "item": "",
-              "queryType": "host"
+              "qryType": 5,
+              "query": "label_values(youtube_live_info, channel)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
             }
           },
           "regex": "",
           "regexApplyTo": "value",
           "sort": "alphabeticalAsc",
-          "definition": "Zabbix - host",
+          "definition": "label_values(youtube_live_info, channel)",
           "options": [],
           "multi": true,
           "includeAll": true,
+          "allValue": ".*",
           "allowCustomValue": true
         }
       },
@@ -3699,6 +2712,7 @@
         "kind": "QueryVariable",
         "spec": {
           "name": "live",
+          "label": "Live",
           "current": {
             "text": [
               "All"
@@ -3707,29 +2721,26 @@
               "$__all"
             ]
           },
-          "label": "Live",
           "hide": "dontHide",
-          "refresh": "onDashboardLoad",
+          "refresh": "onTimeRangeChanged",
           "skipUrlSync": false,
           "query": {
             "kind": "DataQuery",
-            "group": "alexanderzobnin-zabbix-datasource",
+            "group": "prometheus",
             "version": "v0",
             "datasource": {
-              "name": "${DS_ZABBIX}"
+              "name": "${DS_PROMETHEUS}"
             },
             "spec": {
-              "application": "",
-              "group": "YouTube Live Monitor",
-              "host": "$channel",
-              "item": "/.*: Video ID$/",
-              "queryType": "item"
+              "qryType": 5,
+              "query": "query_result(youtube_live_info{channel=~\"$channel\"})",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
             }
           },
-          "regex": "/^(.*): Video ID$/",
+          "regex": "/live=\"(?<text>[^\"]*)\".*video_id=\"(?<value>[^\"]+)\"/",
           "regexApplyTo": "value",
           "sort": "alphabeticalAsc",
-          "definition": "Zabbix - item",
+          "definition": "query_result(youtube_live_info{channel=~\"$channel\"})",
           "options": [],
           "multi": true,
           "includeAll": true,

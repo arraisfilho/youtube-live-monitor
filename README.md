@@ -1,98 +1,64 @@
 # youtube-live-monitor
 
-Coleta métricas de transmissões públicas do YouTube pela Data API v3, envia para o Zabbix e desenha em um dashboard Grafana.
+Coletor de métricas de transmissões públicas do YouTube. Consulta a YouTube Data API v3 (`videos.list`), guarda estado em SQLite e expõe as métricas em `/metrics` no formato Prometheus. O VictoriaMetrics armazena as séries e o Grafana mostra o dashboard.
 
-Só usa `videos.list`. Não lê chat, não baixa vídeo e não acessa nada privado.
-
-## Por que existe
-
-Monitorar uma live com a API pública é fácil. Monitorar vinte sem estourar a quota diária não é. O coletor agrupa até 50 IDs por chamada, consulta lives agendadas com intervalos progressivos conforme o horário se aproxima e para de vez quando a transmissão acaba. Pico, média, agenda e backoff ficam no SQLite, então reiniciar o serviço não desperdiça quota.
+Não lê chat, não baixa vídeo e não acessa nada privado.
 
 ## Requisitos
 
-- Ubuntu Server 24.04 (é o que o instalador conhece)
-- Python 3.12+
-- Zabbix 7.0+
-- Grafana 13 com o plugin Zabbix da Alexander Zobnin e um datasource configurado
-
-O dashboard usa o formato V2 Resource, por isso a exigência do Grafana 13. Outras distros podem ser testadas com `--allow-unsupported`, por sua conta e risco.
+- Docker com Compose (Linux ou macOS), para o ambiente completo
+- ou Python 3.12+ com systemd, para instalar só o coletor no Linux
+- Uma chave da YouTube Data API v3
 
 ## Instalação
+
+Quem usa a 1.x, com Zabbix, deve seguir [MIGRACAO.md](MIGRACAO.md).
+
+### Docker Compose (coletor, VictoriaMetrics e Grafana)
 
 ```bash
 git clone https://github.com/arraisfilho/youtube-live-monitor.git
 cd youtube-live-monitor
-sudo ./install.sh
+mkdir -p secrets
+read -rs CHAVE && printf '%s\n' "$CHAVE" > secrets/youtube_api_key && unset CHAVE
+cp lives.example.yaml config/lives.yaml   # edite a lista de lives
+docker compose up -d --build
 ```
 
-O instalador mostra o plano antes de mexer no sistema, instala só o que falta e preserva `config.yaml` e `lives.yaml` existentes. Use `--yes` para pular a confirmação.
+| Serviço | Endereço |
+|---|---|
+| Grafana (leitura sem login; admin/admin para editar) | http://127.0.0.1:3000/d/youtube-live-monitor |
+| VictoriaMetrics | http://127.0.0.1:8428 |
+| Métricas do coletor | http://127.0.0.1:9877/metrics |
+
+### Somente o coletor, como serviço systemd
+
+```bash
+sudo ./install.sh
+sudo install -o root -g youtube-monitor -m 0640 /dev/stdin /etc/youtube-live-monitor/youtube_api_key
+```
+
+O segundo comando lê a chave da entrada padrão: cole-a e tecle Ctrl-D. Configure seu VictoriaMetrics ou Prometheus para ler `http://<host>:9877/metrics`, e altere `exporter.listen` se ele estiver em outra máquina.
 
 ## Configuração
 
-`/etc/youtube-live-monitor/config.yaml`:
+`config/config.yaml` (Compose) ou `/etc/youtube-live-monitor/config.yaml` (systemd). Veja todos os campos em [config.example.yaml](config.example.yaml).
 
-```yaml
-youtube:
-  api_key: SUA_API_KEY
-
-collector:
-  interval: 15
-  timeout: 10
-  retries: 2
-  batch_size: 50
-  unknown_interval: 300
-
-zabbix:
-  server: zabbix.exemplo.com
-  port: 10051
-  api_url: https://zabbix.exemplo.com/zabbix/api_jsonrpc.php
-  api_token: SEU_TOKEN
-```
-
-Em `api_url` use o nome que está no certificado TLS. Não desative a verificação para contornar hostname divergente.
-
-`/etc/youtube-live-monitor/lives.yaml`:
+`lives.yaml`:
 
 ```yaml
 lives:
-  - url: AbCdEfGhI12
+  - url: https://www.youtube.com/watch?v=AbCdEfGhI12
     enabled: true
   - url: https://youtu.be/XXXXXXXXXXX
-    enabled: true
+    enabled: false
 ```
 
-Aceita ID puro ou URL (`watch`, `youtu.be`, `/live`, `shorts`, `embed`). `enabled` é booleano YAML, sem aspas. Entrada desabilitada não gera chamada. Reinicie o serviço após editar.
+O campo `url` aceita o ID ou URLs `watch`, `youtu.be`, `/live`, `shorts`, `embed`, `music.youtube.com`, `youtube-nocookie.com` e `studio.youtube.com`. `enabled` é booleano YAML, sem aspas. Mudanças em `lives.yaml` e `config.yaml` valem no ciclo seguinte, sem reiniciar.
 
-As variáveis `YOUTUBE_API_KEY`, `YOUTUBE_LIVES_FILE`, `ZABBIX_SERVER`, `ZABBIX_PORT`, `ZABBIX_API_URL` e `ZABBIX_API_TOKEN` têm precedência sobre o YAML. Ficam em `/etc/youtube-live-monitor/environment`, modo `0640`, dono `root:youtube-monitor`.
+A chave é lida, nesta ordem, de `youtube.api_key_file`, `youtube.api_key` ou das variáveis `YOUTUBE_API_KEY_FILE`/`YOUTUBE_API_KEY`. O arquivo é relido a cada ciclo. Também existem as variáveis `YOUTUBE_LIVES_FILE`, `EXPORTER_LISTEN`, `EXPORTER_PORT` e `DISPLAY_TIMEZONE`.
 
-## Uso
-
-```bash
-# valida os arquivos, sem tocar em nada
-sudo -u youtube-monitor /opt/youtube-live-monitor/venv/bin/python \
-  /opt/youtube-live-monitor/youtube_live_monitor.py \
-  --config /etc/youtube-live-monitor/config.yaml --check-config
-
-# consulta todas as lives uma vez, sem provisionar nem enviar
-... --database /var/lib/youtube-live-monitor/state.db --test
-
-# um ciclo completo
-... --once
-
-# mostra os campos da API usados na classificação
-... --inspect-api
-```
-
-`--test` e `--once` saem com código diferente de zero se alguma live falhar.
-
-```bash
-sudo systemctl restart youtube-live-monitor
-sudo journalctl -u youtube-live-monitor -f
-```
-
-## Agenda de consultas
-
-A primeira consulta descobre estado e horário. Daí em diante:
+### Agenda de consultas
 
 | Situação | Próxima consulta |
 |---|---:|
@@ -101,58 +67,51 @@ A primeira consulta descobre estado e horário. Daí em diante:
 | 1 a 6 h | 15 min |
 | 15 a 60 min | 5 min |
 | Até 15 min | 1 min |
-| Horário vencido, ainda agendada | 30 s |
+| Atrasada até 1 h | 30 s |
+| Atrasada de 1 a 6 h | 5 min |
+| Atrasada de 6 a 48 h | 1 h |
+| Atrasada há mais de 48 h | 6 h |
 | Ao vivo | 15 s |
-| Encerrada | nunca mais |
+| Encerrada | nunca mais (após `actualEndTime` ou duas leituras seguidas) |
+| Indisponível (privada ou removida) | 30 min |
 | Erro | 5, 10, 20, 40, até 60 min |
 
-Tudo que estiver pronto vai no mesmo lote. Como `videos.list` custa uma unidade por chamada e não por vídeo, 30 lives ao vivo custam uma unidade por ciclo. `--test` ignora a agenda de propósito.
+Até 50 vídeos vão na mesma chamada, que custa 1 unidade de quota. A quota é contada no dia do Pacífico, que é quando o YouTube a renova. Ao esgotar, o coletor pausa até a virada.
 
-## Métricas
-
-Por live: `concurrent_viewers`, `peak_viewers`, `peak_timestamp`, `average_viewers`, `viewer_change_per_minute`, `viewer_change_percent`, `total_views`, `new_views_per_minute`, `like_count`, `likes_per_minute`, `comment_count`, `engagement_rate`, `elapsed_seconds`, `scheduled_delay_seconds`, `time_to_peak_seconds`, `viewer_count_available` e `status`.
-
-`status` é `0` desconhecida, `1` agendada, `2` ao vivo, `3` encerrada. Métricas de audiência só entram no histórico enquanto a live está ao vivo; agendada envia apenas estado e metadados. Curtidas, comentários e audiência simultânea podem simplesmente não vir — o YouTube ou o dono do canal decidem isso. Dislike público não existe mais na API.
-
-O host `youtube-live-monitor-collector`, no grupo `YouTube Live Monitor Internal`, recebe as métricas do próprio coletor: chamadas do dia, vídeos por chamada, consultas evitadas, duração do ciclo, idade do último sucesso, sequência de erros, falhas do `zabbix_sender`, tamanho do banco e contagem de lives por estado. Fica fora do grupo usado pela variável `Canal` para não sujar o filtro.
-
-## Zabbix e Grafana
-
-Na primeira coleta o token cria (ou reaproveita) o grupo, o template, o value map, um host `youtube-channel-<channel_id>` por canal e os itens trapper por vídeo. É idempotente.
-
-O dashboard vai para `/var/lib/grafana/dashboards/youtube-live-monitor/dashboard.json`, com backup datado do anterior. Não contém UID de datasource nem nada da instância onde foi feito — escolha o datasource na variável `Zabbix` e salve se quiser fixar.
-
-Com `Canal = All` e `Live = All` você vê uma seção por live de todos os canais. A seção de saúde do coletor não se repete. Refresh de 15 s.
-
-## Quando algo não funciona
+## Uso
 
 ```bash
-sudo systemctl status zabbix-server grafana-server youtube-live-monitor
-sudo journalctl -u youtube-live-monitor --since "30 minutes ago" --no-pager
-sudo tail -n 100 /var/log/youtube-live-monitor/monitor.log
-sudo -u youtube-monitor test -r /etc/youtube-live-monitor/config.yaml
-sudo -u youtube-monitor test -w /var/lib/youtube-live-monitor
+# valida os arquivos (avisa se a chave falta ou é o valor de exemplo)
+docker compose run --rm collector --config /etc/youtube-live-monitor/config.yaml --check-config
+
+# consulta todas as lives uma vez, sem gravar estado
+docker compose run --rm collector --config /etc/youtube-live-monitor/config.yaml --test
+
+# mostra os campos da API usados para classificar o estado
+docker compose run --rm collector --config /etc/youtube-live-monitor/config.yaml --inspect-api
+
+docker compose logs -f collector
 ```
 
-Erro de certificado se resolve com o DNS certo em `zabbix.api_url` ou um certificado com SAN adequado, não desligando a verificação. Erro persistente entra em backoff, e uma live com problema não derruba as outras.
+Fora do Docker, use os mesmos parâmetros com `/opt/youtube-live-monitor/venv/bin/python /opt/youtube-live-monitor/youtube_live_monitor.py`. `--once` executa um ciclo e imprime as métricas.
 
-## Limitações
+### Métricas
 
-Bitrate, resolução de ingest, saúde do encoder e chat exigem API autenticada com autorização do canal. Não dá para fazer isso monitorando lives públicas de terceiros, então está fora do escopo. A própria Data API às vezes demora a atualizar os contadores.
+Todas as métricas por live têm o rótulo `video_id`. Título, canal, nome de exibição e URL ficam em `youtube_live_info`.
 
-## Atualizar e remover
+| Métrica | Conteúdo |
+|---|---|
+| `youtube_live_status` | 0 desconhecida, 1 agendada, 2 ao vivo, 3 encerrada, 4 indisponível |
+| `youtube_live_concurrent_viewers`, `_peak_viewers`, `_average_viewers` | audiência atual, pico e média |
+| `youtube_live_viewer_change_per_minute`, `_viewer_change_percent` | variação de audiência |
+| `youtube_live_views`, `_new_views_per_minute`, `_views_since_start` | visualizações |
+| `youtube_live_likes`, `_likes_per_minute`, `_comments`, `_comments_per_minute` | curtidas e comentários |
+| `youtube_live_engagement_rate_percent` | curtidas por visualização |
+| `youtube_live_elapsed_seconds`, `_start_delay_seconds`, `_time_to_peak_seconds`, `_peak_timestamp_seconds` | tempos |
+| `youtube_live_seconds_until_start`, `_overdue_seconds` | contagem regressiva e atraso de lives agendadas |
+| `youtube_collector_*` | chamadas e quota do dia, pausa por quota, consultas evitadas, erros, lives por estado, banco |
 
-```bash
-git pull --ff-only
-sudo ./install.sh          # preserva config, lives e banco
-```
-
-```bash
-sudo ./uninstall.sh          # mantém os dados
-sudo ./uninstall.sh --purge  # apaga tudo local
-```
-
-Objetos e histórico no Zabbix não são removidos.
+Pico e média ficam vazios quando o canal oculta a audiência.
 
 ## Desenvolvimento
 
@@ -168,5 +127,3 @@ Veja [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) e [CHANGELOG
 ## Licença
 
 MIT. Veja [LICENSE](LICENSE).
-
-YouTube, Zabbix e Grafana são marcas de seus donos. Este projeto não tem qualquer vínculo com eles.

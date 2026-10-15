@@ -11,7 +11,9 @@ pip install -r requirements.txt -r requirements-dev.txt
 make check
 ```
 
-`make check` roda ruff, pytest, `bash -n`, shellcheck (se instalado) e valida o JSON do dashboard e os YAMLs de exemplo.
+`make check` roda ruff, pytest, `bash -n`, shellcheck (se instalado) e valida o JSON do dashboard e os YAMLs do projeto.
+
+Para o ambiente completo: `docker compose up -d --build`.
 
 ## Pull requests
 
