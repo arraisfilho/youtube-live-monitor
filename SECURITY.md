@@ -16,9 +16,8 @@ Descreva o impacto, a menor forma de reproduzir e, se tiver, a correção sugeri
 
 Nunca publique:
 
-- `/etc/youtube-live-monitor/config.yaml`
-- `/etc/youtube-live-monitor/environment`
-- token da API do Zabbix
+- `secrets/youtube_api_key` e `/etc/youtube-live-monitor/youtube_api_key`
+- `/etc/youtube-live-monitor/config.yaml` e `environment`, se contiverem a chave
 - chave da YouTube Data API
 - `state.db`, logs ou backups de produção
 

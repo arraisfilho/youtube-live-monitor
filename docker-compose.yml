@@ -1,0 +1,48 @@
+name: youtube-live-monitor
+
+services:
+  collector:
+    build: .
+    restart: unless-stopped
+    environment:
+      TZ: America/Sao_Paulo
+    volumes:
+      - ./config:/etc/youtube-live-monitor:ro
+      - ./secrets:/run/secrets:ro
+      - collector-data:/var/lib/youtube-live-monitor
+    ports:
+      - "127.0.0.1:9877:9877"
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.154.0
+    restart: unless-stopped
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=12
+      - -promscrape.config=/etc/victoriametrics/scrape.yml
+    volumes:
+      - vm-data:/storage
+      - ./deploy/victoriametrics/scrape.yml:/etc/victoriametrics/scrape.yml:ro
+    ports:
+      - "127.0.0.1:8428:8428"
+
+  grafana:
+    image: grafana/grafana:13.2.4
+    restart: unless-stopped
+    depends_on:
+      - victoriametrics
+    environment:
+      # Leitura sem login, só em 127.0.0.1. Para editar, entre como admin.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana_dashboard_youtube_live.json:/var/lib/grafana-dashboards/youtube-live-monitor.json:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+
+volumes:
+  collector-data:
+  vm-data:
+  grafana-data:
