@@ -13,4 +13,4 @@ test:
 validate:
 	python3 -m compileall -q youtube_live_monitor.py
 	python3 -m json.tool grafana_dashboard_youtube_live.json >/dev/null
-	python3 -c 'import pathlib, yaml; [yaml.safe_load(p.read_text()) for p in map(pathlib.Path, ("config.example.yaml", "lives.example.yaml", "zabbix_template_youtube_live.yaml", "grafana-youtube-live-provider.yaml"))]'
+	python3 -c 'import pathlib, yaml; [yaml.safe_load(p.read_text()) for p in map(pathlib.Path, ("config.example.yaml", "lives.example.yaml", "config/config.yaml", "docker-compose.yml", "deploy/victoriametrics/scrape.yml", "deploy/grafana/provisioning/datasources/victoriametrics.yaml", "deploy/grafana/provisioning/dashboards/youtube-live-monitor.yaml"))]'

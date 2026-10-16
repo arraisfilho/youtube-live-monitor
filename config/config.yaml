@@ -1,0 +1,15 @@
+# Configuração usada pelo docker compose. A chave da YouTube API fica em
+# secrets/youtube_api_key, fora do Git.
+youtube:
+  api_key_file: /run/secrets/youtube_api_key
+  daily_quota: 10000
+
+collector:
+  interval: 15
+
+exporter:
+  listen: 0.0.0.0
+  port: 9877
+
+display_timezone: America/Sao_Paulo
+lives_file: /etc/youtube-live-monitor/lives.yaml

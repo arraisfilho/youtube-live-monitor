@@ -1,7 +1,7 @@
 [Unit]
-Description=YouTube Live Monitor for Zabbix
+Description=YouTube Live Monitor (exporter para VictoriaMetrics/Prometheus)
 Documentation=file:///usr/share/doc/youtube-live-monitor/README.md
-After=network-online.target zabbix-server.service
+After=network-online.target
 Wants=network-online.target
 
 [Service]
@@ -15,18 +15,20 @@ RestartSec=10
 WorkingDirectory=/var/lib/youtube-live-monitor
 StateDirectory=youtube-live-monitor
 StateDirectoryMode=0750
-LogsDirectory=youtube-live-monitor
-LogsDirectoryMode=0750
 ConfigurationDirectory=youtube-live-monitor
 ConfigurationDirectoryMode=0750
-StandardOutput=append:/var/log/youtube-live-monitor/monitor.log
-StandardError=append:/var/log/youtube-live-monitor/monitor.log
 UMask=0077
 NoNewPrivileges=true
 PrivateTmp=true
+PrivateDevices=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/var/lib/youtube-live-monitor /var/log/youtube-live-monitor
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+ReadWritePaths=/var/lib/youtube-live-monitor
 CapabilityBoundingSet=
 RestrictSUIDSGID=true
 LockPersonality=true
