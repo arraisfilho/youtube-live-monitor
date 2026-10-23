@@ -1,0 +1,84 @@
+# Full stack: app (interface, API and collector) and VictoriaMetrics.
+# Only the app publishes a port, on 127.0.0.1. HTTPS belongs to a reverse proxy on the host.
+name: youtube-live-monitor
+
+x-hardening: &hardening
+  init: true
+  restart: unless-stopped
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  logging:
+    driver: local
+    options:
+      max-size: "3m"
+      max-file: "4"
+
+services:
+  app:
+    <<: *hardening
+    build: .
+    image: youtube-live-monitor:local
+    environment:
+      TZ: America/Sao_Paulo
+      YLM_SECRET_FILE: /run/secrets/app_key
+      YLM_VM_URL: http://victoriametrics:8428
+    secrets: [app_key]
+    ports:
+      - "${YLM_BIND:-127.0.0.1:8082}:8000"
+    volumes:
+      - app-data:/data
+    tmpfs:
+      - /tmp:mode=1777,size=32m
+    networks: [edge, internal]
+    mem_limit: 256m
+    pids_limit: 128
+    stop_grace_period: 20s
+    depends_on:
+      victoriametrics:
+        condition: service_healthy
+
+  victoriametrics:
+    <<: *hardening
+    image: victoriametrics/victoria-metrics:v1.154.0
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=${YLM_RETENTION:-12}
+      - -promscrape.config=/etc/victoriametrics/scrape.yml
+      - -httpListenAddr=:8428
+      # 7 days of 15 s points (40,320) exceed the default limit of 30,000.
+      - -search.maxPointsPerTimeseries=50000
+    volumes:
+      - vm-data:/storage
+      - ./deploy/victoriametrics/scrape.yml:/etc/victoriametrics/scrape.yml:ro
+    tmpfs:
+      - /tmp:size=64m
+    networks: [internal]
+    mem_limit: 512m
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8428/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+networks:
+  # Outbound access to the YouTube API and the published port: app only.
+  edge:
+    ipam:
+      config:
+        - subnet: ${YLM_EDGE_SUBNET:-172.30.88.0/24}
+  # No internet access: app and VictoriaMetrics.
+  internal:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${YLM_INTERNAL_SUBNET:-172.30.89.0/24}
+
+secrets:
+  app_key:
+    file: ./secrets/app_key
+
+volumes:
+  app-data:
+  vm-data:

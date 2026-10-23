@@ -1,0 +1,21 @@
+# Optional advanced settings. Mount this file at /etc/youtube-live-monitor/config.yaml in the
+# app service. The API key, quota, live polling interval and time zone are set in the interface.
+collector:
+  timeout: 10
+  retries: 2
+  batch_size: 50
+  unknown_interval: 300
+  unavailable_interval: 1800
+  error_backoff_initial: 300
+  error_backoff_max: 3600
+  log_api_state: false
+  schedule_poll:
+    more_than_24h: 21600
+    more_than_6h: 3600
+    more_than_1h: 900
+    more_than_15m: 300
+    near_start: 60
+    overdue: 30
+    overdue_after_1h: 300
+    overdue_after_6h: 3600
+    overdue_after_48h: 21600
