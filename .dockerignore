@@ -1,0 +1,9 @@
+.git
+.github
+secrets
+tests
+frontend/node_modules
+frontend/dist
+**/__pycache__
+*.db
+*.db-*

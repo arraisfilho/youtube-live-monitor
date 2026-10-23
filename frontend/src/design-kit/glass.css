@@ -1,0 +1,158 @@
+/* Translucent navigation layer (sidebar, mobile bars, menus, dialogs) over an ambient background. */
+:root {
+  --ambient-light:
+    radial-gradient(70vw 60vh at 0% 0%, var(--ambient-1), transparent 70%),
+    radial-gradient(60vw 50vh at 100% 15%, var(--ambient-2), transparent 70%),
+    radial-gradient(70vw 60vh at 40% 100%, var(--ambient-3), transparent 70%);
+}
+body {
+  background-color: var(--page);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--ambient-light);
+}
+.auth-page {
+  background: transparent;
+}
+
+.sidebar,
+.mobile-header,
+.mobile-nav,
+.menu,
+.dialog,
+.toast,
+.pending-bar {
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+}
+.sidebar,
+.mobile-header,
+.mobile-nav {
+  background: var(--glass-fill);
+}
+.menu,
+.dialog,
+.toast,
+.pending-bar {
+  background: var(--glass-fill-strong);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 0 1px var(--glass-edge), var(--glass-shadow);
+}
+@media (min-width: 1024px) {
+  :root {
+    --shell-left: calc(var(--sidebar-width) + 12px);
+  }
+  .sidebar {
+    top: 12px;
+    bottom: 12px;
+    left: 12px;
+    border: 1px solid var(--glass-stroke);
+    border-radius: var(--radius-xl);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 0 1px var(--glass-edge), var(--glass-shadow);
+  }
+}
+@media (max-width: 1023px) {
+  :root {
+    --shell-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom, 0px) + 28px);
+  }
+  .mobile-header {
+    border-bottom: 1px solid var(--glass-stroke);
+    box-shadow: 0 1px 0 var(--glass-edge);
+  }
+  .mobile-nav {
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+    left: max(12px, env(safe-area-inset-left, 0px));
+    height: calc(var(--tab-bar-height) + 8px);
+    padding: 4px;
+    border: 1px solid var(--glass-stroke);
+    border-radius: var(--radius-pill);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 0 1px var(--glass-edge), var(--glass-shadow);
+  }
+  .mobile-nav a {
+    border-radius: var(--radius-pill);
+  }
+}
+.auth-toolbar .pref-trigger {
+  background-color: var(--glass-fill-strong);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 0 1px var(--glass-edge);
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .sidebar {
+    background: var(--material-sidebar-solid);
+  }
+  .mobile-header,
+  .mobile-nav {
+    background: var(--material-bar-solid);
+  }
+  .menu,
+  .dialog,
+  .toast,
+  .pending-bar {
+    background: var(--material-popover-solid);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  body::before {
+    display: none;
+  }
+  .sidebar {
+    background: var(--material-sidebar-solid);
+  }
+  .mobile-header,
+  .mobile-nav {
+    background: var(--material-bar-solid);
+  }
+  .menu,
+  .dialog,
+  .toast,
+  .pending-bar {
+    background: var(--material-popover-solid);
+  }
+  .auth-toolbar .pref-trigger {
+    background-color: var(--material-popover-solid);
+  }
+  .sidebar,
+  .mobile-header,
+  .mobile-nav,
+  .menu,
+  .dialog,
+  .toast,
+  .pending-bar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  body::before {
+    display: none;
+  }
+  .sidebar,
+  .mobile-header,
+  .mobile-nav {
+    border-color: var(--border-strong);
+  }
+  .menu,
+  .dialog,
+  .toast,
+  .pending-bar {
+    border: 1px solid var(--border-strong);
+  }
+  .sidebar {
+    background: var(--material-sidebar-solid);
+  }
+  .mobile-header,
+  .mobile-nav {
+    background: var(--material-bar-solid);
+  }
+  .menu,
+  .dialog,
+  .toast,
+  .pending-bar {
+    background: var(--material-popover-solid);
+  }
+}
