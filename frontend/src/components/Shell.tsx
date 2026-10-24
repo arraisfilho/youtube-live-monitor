@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { HeartPulse, List, LogOut, Settings } from "lucide-react";
-import type { ReactNode } from "react";
+import { HeartPulse, List, LogOut, PanelLeftClose, PanelLeftOpen, Settings } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { api } from "../api";
 import { Button, ContextMenu } from "../design-kit/ui";
@@ -8,9 +8,31 @@ import { t } from "../i18n";
 import { QuickPreferences } from "./QuickPreferences";
 import { AppIcon } from "./StatusPill";
 
+/** Collapsed sidebar on this device; theme-boot.js applies it before the first paint. */
+const SIDEBAR_KEY = "app-sidebar";
+
+function useSidebarCollapsed() {
+  const [collapsed, setCollapsed] = useState(() => document.documentElement.dataset.sidebar === "collapsed");
+  const toggle = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    if (next) document.documentElement.dataset.sidebar = "collapsed";
+    else delete document.documentElement.dataset.sidebar;
+    try {
+      if (next) localStorage.setItem(SIDEBAR_KEY, "collapsed");
+      else localStorage.removeItem(SIDEBAR_KEY);
+    } catch {
+      /* Storage is optional: the choice lasts for this visit. */
+    }
+  };
+  return [collapsed, toggle] as const;
+}
+
 export function Shell({ version, children }: { version: string; children: ReactNode }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [collapsed, toggleSidebar] = useSidebarCollapsed();
+  const toggleLabel = collapsed ? t("Expandir menu") : t("Recolher menu");
   const nav = [
     { to: "/", label: t("Lives"), short: t("Lives"), icon: List, end: true },
     { to: "/saude", label: t("Saúde do coletor"), short: t("Saúde"), icon: HeartPulse, end: false },
@@ -30,13 +52,25 @@ export function Shell({ version, children }: { version: string; children: ReactN
         {t("Pular para o conteúdo")}
       </a>
       <aside className="sidebar">
-        <NavLink className="brand" to="/" aria-label={t("YouTube Live Monitor, início")}>
-          <AppIcon />
-          <span>Live Monitor</span>
-        </NavLink>
+        <div className="sidebar-head">
+          <NavLink className="brand" to="/" aria-label={t("YouTube Live Monitor, início")}>
+            <AppIcon />
+            <span>Live Monitor</span>
+          </NavLink>
+          <button
+            type="button"
+            className="sidebar-toggle"
+            aria-label={toggleLabel}
+            aria-expanded={!collapsed}
+            title={toggleLabel}
+            onClick={toggleSidebar}
+          >
+            {collapsed ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
+          </button>
+        </div>
         <nav aria-label={t("Navegação principal")}>
           {nav.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} className={navClass}>
+            <NavLink key={item.to} to={item.to} end={item.end} className={navClass} title={collapsed ? item.label : undefined}>
               <item.icon size={18} aria-hidden="true" />
               <span>{item.label}</span>
             </NavLink>
@@ -47,9 +81,9 @@ export function Shell({ version, children }: { version: string; children: ReactN
             <QuickPreferences placement="up" />
             <small className="system-version">v{version}</small>
           </div>
-          <Button variant="ghost" onClick={() => void logout()}>
+          <Button variant="ghost" onClick={() => void logout()} aria-label={collapsed ? t("Sair") : undefined} title={collapsed ? t("Sair") : undefined}>
             <LogOut size={16} aria-hidden="true" />
-            {t("Sair")}
+            <span>{t("Sair")}</span>
           </Button>
         </div>
       </aside>

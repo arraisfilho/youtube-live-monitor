@@ -1,2 +1,3 @@
-// Applies the chosen theme before the first paint (a separate file because of the CSP).
+// Applies the chosen theme and the collapsed sidebar before the first paint (a separate file because of the CSP).
 try{var a=localStorage.getItem("app-appearance");if(a==="light"||a==="dark"){document.documentElement.setAttribute("data-theme",a);document.querySelector('meta[name="color-scheme"]').setAttribute("content",a);var m=document.querySelectorAll("meta[data-scheme]");for(var i=0;m.length>i;i++)m[i].setAttribute("media",m[i].getAttribute("data-scheme")===a?"all":"not all")}}catch(e){}
+try{if(localStorage.getItem("app-sidebar")==="collapsed")document.documentElement.setAttribute("data-sidebar","collapsed")}catch(e){}
