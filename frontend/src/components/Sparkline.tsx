@@ -24,7 +24,7 @@ export function Sparkline({ points, color }: { points: [number, number][] | unde
         cursor: { show: false },
         select: { show: false, left: 0, top: 0, width: 0, height: 0 },
         axes: [{ show: false }, { show: false }],
-        scales: { x: { time: true }, y: { range: (_u, min, max) => (min === max ? [min - 1, max + 1] : [min, max]) } },
+        scales: { x: { time: true }, y: { range: (_u, min, max) => (min === max ? [min, max + 1] : [min, max]) } },
         series: [{}, { stroke, width: 1.5, fill: withAlpha(stroke, 0.18), points: { show: false } }],
         padding: [2, 0, 0, 0],
       },

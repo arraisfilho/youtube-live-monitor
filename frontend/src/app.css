@@ -26,11 +26,13 @@
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 .stat {
-  display: grid;
-  align-content: start;
-  gap: var(--space-1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
-  padding: var(--space-4);
+  overflow: hidden;
+  padding: 10px var(--space-3) var(--space-2);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   background: var(--surface);
@@ -39,8 +41,8 @@
 .stat-label {
   overflow: hidden;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 500;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -48,8 +50,8 @@
 .stat-value {
   overflow: hidden;
   color: var(--ink);
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 20px;
+  line-height: 26px;
   font-weight: 600;
   letter-spacing: -.02em;
   white-space: nowrap;
@@ -88,13 +90,18 @@
 .stat[class*="tone-"] .stat-value {
   color: var(--tone);
 }
-.stat.has-spark {
-  padding-bottom: 0;
-  overflow: hidden;
+.stat > :not(.stat-spark) {
+  position: relative;
+  z-index: 1;
 }
+/* The trend sits behind the text, on the card's bottom edge, whatever the row height. */
 .stat-spark {
-  height: 40px;
-  margin: var(--space-2) calc(-1 * var(--space-4)) 0;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 32px;
+  pointer-events: none;
 }
 .stat-hint {
   overflow: hidden;
@@ -398,16 +405,19 @@
   }
 }
 @media (max-width: 479px) {
+  .stat-grid,
+  .stat-grid-auto {
+    gap: var(--space-2);
+  }
   .stat {
-    padding: var(--space-3);
+    padding: var(--space-2) 10px 6px;
   }
   .stat-spark {
-    margin-right: calc(-1 * var(--space-3));
-    margin-left: calc(-1 * var(--space-3));
+    height: 26px;
   }
   .stat-value {
-    font-size: 20px;
-    line-height: 26px;
+    font-size: 18px;
+    line-height: 24px;
   }
 }
 
