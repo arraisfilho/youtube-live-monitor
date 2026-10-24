@@ -22,7 +22,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import requests
 import yaml
 
-VERSION = "1.0.1"
+VERSION = "1.1.0"
 DEFAULT_CONFIG = "/etc/youtube-live-monitor/config.yaml"
 DEFAULT_DB = "/var/lib/youtube-live-monitor/state.db"
 API_URL = "https://www.googleapis.com/youtube/v3/videos"
