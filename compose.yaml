@@ -40,7 +40,7 @@ services:
 
   victoriametrics:
     <<: *hardening
-    image: victoriametrics/victoria-metrics:v1.154.0
+    image: victoriametrics/victoria-metrics:v1.155.0
     command:
       - -storageDataPath=/storage
       - -retentionPeriod=${YLM_RETENTION:-12}
