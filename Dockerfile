@@ -5,7 +5,7 @@ RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
 RUN npm run build
 
-FROM python:3.12-slim-bookworm
+FROM python:3.15-slim-bookworm
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     YLM_DATA_DIR=/data YLM_STATIC_DIR=/app/frontend/dist EXPORTER_LISTEN=0.0.0.0
 WORKDIR /app
